@@ -93,10 +93,22 @@ jobs:
       working-directory: mekhq
       run: chmod +x gradlew
       if: runner.os != 'Windows'
-      
+    - name: All process 1
+      run: |
+        Write-Host "Get all process"
+        Get-Process
+        Write-Host "Get all services"
+        Get-Service
+      shell: pwsh
     # Include --stacktrace to make some build failures easier
     # to figure out.
     - name: Build with Gradle
       working-directory: mekhq
       run: ./gradlew -I .github/build-scan-init.gradle build --stacktrace --scan
-
+    - name: All process 2
+      run: |
+        Write-Host "Get all process"
+        Get-Process
+        Write-Host "Get all services"
+        Get-Service
+      shell: pwsh
