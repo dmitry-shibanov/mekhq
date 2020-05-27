@@ -9,7 +9,7 @@
 
 name: MekHQ Nightly CI
 
-on: [push]   
+on: [push]    
 
 #
 # Setup the Build Scan "VCS" link for all gradle invocations
