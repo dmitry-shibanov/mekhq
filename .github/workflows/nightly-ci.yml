@@ -9,11 +9,7 @@
 
 name: MekHQ Nightly CI
 
-on:
-  schedule:
-    # Nightly at Midnight (UTC)
-    # ref: https://crontab.guru/every-night
-    - cron:  '0 0 * * *'
+on: [push]
 
 #
 # Setup the Build Scan "VCS" link for all gradle invocations
@@ -104,24 +100,3 @@ jobs:
       working-directory: mekhq
       run: ./gradlew -I .github/build-scan-init.gradle build --stacktrace --scan
 
-    - name: Upload Test Logs on Failure
-      uses: actions/upload-artifact@v2-preview
-      if: failure()
-      with:
-        name: ${{ matrix.os }}-jdk${{ matrix.java }}-ci-failure-logs
-        path: mekhq/MekHQ/build/reports/
-        
-    #
-    # Put the releases up in a single zip file called:
-    #
-    #     releases-{{ matrix.os }}.zip
-    #
-    # NB: Due to a GitHub Actions limitation we won't know
-    #     what the filename is in order to display it somewhere.
-    #
-    - name: Upload Releases
-      uses: actions/upload-artifact@v2-preview
-      if: matrix.os == 'ubuntu-latest'
-      with:
-        name: releases-java${{ matrix.java }}
-        path: mekhq/MekHQ/build/distributions/
