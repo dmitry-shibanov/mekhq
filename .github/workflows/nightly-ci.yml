@@ -100,10 +100,11 @@ jobs:
       run: |
         docker ps --all
         docker container remove $(docker container ls -aq)
-        docker build .
+        docker build -t someid/mekhq .
         docker ps
-        id_container=$(docker container ls -aq)
-        docker run $id_container
+        docker ps --all
+        #id_container=$(docker container ls -aq)
+        docker run someid/mekhq
         
         
 
