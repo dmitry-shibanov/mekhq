@@ -83,29 +83,53 @@ jobs:
     #
     # Setup the requested Java Version from the matrix
     #
-    - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@v1
-      with:
-        java-version: ${{ matrix.java }}
+    - name: Set up docker
+      run: |
+        touch Dockerfile
+        echo "FROM openjdk:${{ matrix.java }}" >> Dockerfile
+        echo "WORKDIR /app" >> Dockerfile
+        echo "COPY ./ ./" >> Dockerfile
+        echo 'RUN echo "includeBuild '../megamek'" >./mekhq/settings_local.gradle' >> Dockerfile
+        echo 'RUN echo "includeBuild '../megameklab'" >>./mekhq/settings_local.gradle' >> Dockerfile
+        echo 'RUN echo "if (gradle.parent == null) includeBuild '../megamek'" >./megameklab/settings_local.gradle' >> Dockerfile
+        echo "WORKDIR /app/mekhq" >> Dockerfile
+        echo "RUN chmod +x gradlew" >> Dockerfile
+        echo 'CMD ["./gradlew", "-I", ".github/build-scan-init.gradle", "build", "--stacktrace", "--scan"]' >> Dockerfile
+
+    - name: Run Docker
+      run: |
+        docker ps --all
+        docker container remove $(docker container ls -aq)
+        docker build .
+        docker ps
+        id_container=$(docker container ls -aq)
+        docker run $id_container
+        
+        
+
+#     - name: Set up JDK ${{ matrix.java }}
+#       uses: actions/setup-java@v1
+#       with:
+#         java-version: ${{ matrix.java }}
 
     # Don't run this for Windows.
-    - name: Grant execute permission for gradlew (*nix or MacOS)
-      working-directory: mekhq
-      run: chmod +x gradlew
-      if: runner.os != 'Windows'
-    - name: All process 1
-      run: |
-        Write-Host "Get all process"
-        Get-Process
-      shell: pwsh
+#     - name: Grant execute permission for gradlew (*nix or MacOS)
+#       working-directory: mekhq
+#       run: chmod +x gradlew
+#       if: runner.os != 'Windows'
+#     - name: All process 1
+#       run: |
+#         Write-Host "Get all process"
+#         Get-Process
+#       shell: pwsh
     # Include --stacktrace to make some build failures easier
     # to figure out.
-    - name: Build with Gradle
-      working-directory: mekhq
-      run: ./gradlew -I .github/build-scan-init.gradle build --stacktrace --scan
-    - name: All process 2
-      if: ${{ always() }}
-      run: |
-        Write-Host "Get all process"
-        Get-Process
-      shell: pwsh
+#     - name: Build with Gradle
+#       working-directory: mekhq
+#       run: ./gradlew -I .github/build-scan-init.gradle build --stacktrace --scan
+#     - name: All process 2
+#       if: ${{ always() }}
+#       run: |
+#         Write-Host "Get all process"
+#         Get-Process
+#       shell: pwsh
