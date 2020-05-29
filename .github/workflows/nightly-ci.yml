@@ -98,13 +98,14 @@ jobs:
 
     - name: Run Docker
       run: |
+        docker login --username ${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }}
         docker ps --all
         docker container remove $(docker container ls -aq)
-        docker build -t someid/mekhq .
+        docker build -t ${{ secrets.USERNAME }}/mekhq .
         docker ps
         docker ps --all
         #id_container=$(docker container ls -aq)
-        docker run someid/mekhq
+        docker run ${{ secrets.USERNAME }}/mekhq
         
         
 
