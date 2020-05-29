@@ -88,6 +88,12 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.java }}
+        
+        
+    - name: Grant execute permission for gradlew (*nix or MacOS)
+      working-directory: mekhq
+      run: chmod +x gradlew
+      if: runner.os != 'Windows'
 
     - name: Set up docker
       run: |
@@ -96,7 +102,6 @@ jobs:
         echo "WORKDIR /app" >> Dockerfile
         echo "COPY ./ ./" >> Dockerfile
         echo "WORKDIR /app/mekhq" >> Dockerfile
-        echo "RUN chmod +x gradlew" >> Dockerfile
         echo 'CMD ["./gradlew", "-I", ".github/build-scan-init.gradle", "build", "--stacktrace", "--scan"]' >> Dockerfile
 
     - name: Run Docker
